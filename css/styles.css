@@ -300,3 +300,11 @@ form {
     margin-right: 48px;
   }
 }
+.auth-panel .primary-btn {
+  margin-top: 6px;
+}
+
+.authForm button,
+form button {
+  display: inline-flex !important;
+}
