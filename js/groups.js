@@ -1,5 +1,5 @@
 import { db } from "./firebase-config.js";
-import { currentUser } from "./auth.js";
+import { currentUser, currentProfile } from "./auth.js";
 
 import {
   collection,
@@ -9,12 +9,15 @@ import {
   getDocs,
   query,
   where,
-  onSnapshot
+  onSnapshot,
+  updateDoc,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 export let activeGroupId = null;
 export let activeGroupName = null;
 export let activeMembers = [];
+export let activeGroupData = null;
 
 const colors = [
   "#18352d",
@@ -26,18 +29,15 @@ const colors = [
   "#9f4f3f"
 ];
 
-const homeView = document.getElementById("homeView");
-const createGroupView = document.getElementById("createGroupView");
-const groupView = document.getElementById("groupView");
-
 const newGroupBtn = document.getElementById("newGroupBtn");
 const groupForm = document.getElementById("groupForm");
 const groupsList = document.getElementById("groupsList");
 const groupTitle = document.getElementById("groupTitle");
-
 const memberForm = document.getElementById("memberForm");
 const memberEmail = document.getElementById("memberEmail");
 const membersList = document.getElementById("membersList");
+const adminPanel = document.getElementById("adminPanel");
+const deleteGroupBtn = document.getElementById("deleteGroupBtn");
 
 newGroupBtn.addEventListener("click", () => {
   showView("createGroupView");
@@ -47,7 +47,6 @@ groupForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const name = document.getElementById("groupName").value.trim();
-
   if (!name) return;
 
   const groupRef = await addDoc(collection(db, "groups"), {
@@ -62,8 +61,8 @@ groupForm.addEventListener("submit", async (event) => {
 
   await setDoc(doc(db, "groups", groupRef.id, "members", currentUser.uid), {
     uid: currentUser.uid,
-    email: currentUser.email,
-    name: currentUser.email,
+    email: currentProfile?.email || currentUser.email,
+    name: currentProfile?.name || currentUser.email,
     role: "admin",
     color: colors[0],
     active: true,
@@ -71,7 +70,6 @@ groupForm.addEventListener("submit", async (event) => {
   });
 
   groupForm.reset();
-
   showView("homeView");
 });
 
@@ -109,19 +107,56 @@ memberForm.addEventListener("submit", async (event) => {
     joinedAt: Date.now()
   });
 
-  const groupDocRef = doc(db, "groups", activeGroupId);
   const freshMembers = [...new Set([...activeMembers.map(m => m.uid), user.uid])];
 
-  await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
-    .then(({ updateDoc }) => {
-      return updateDoc(groupDocRef, {
-        members: freshMembers,
-        updatedAt: Date.now()
-      });
-    });
+  await updateDoc(doc(db, "groups", activeGroupId), {
+    members: freshMembers,
+    updatedAt: Date.now()
+  });
 
   memberEmail.value = "";
 });
+
+deleteGroupBtn.addEventListener("click", async () => {
+  if (!activeGroupId || !activeGroupData) return;
+
+  if (activeGroupData.adminId !== currentUser.uid) {
+    alert("Solo el administrador puede eliminar este grupo.");
+    return;
+  }
+
+  const ok = confirm("¿Seguro que quieres eliminar este grupo? Esta acción no se puede deshacer.");
+
+  if (!ok) return;
+
+  await deleteSubcollection("members");
+  await deleteSubcollection("expenses");
+  await deleteSubcollection("activity");
+  await deleteSubcollection("settlements");
+
+  await deleteDoc(doc(db, "groups", activeGroupId));
+
+  activeGroupId = null;
+  activeGroupName = null;
+  activeMembers = [];
+  activeGroupData = null;
+
+  showView("homeView");
+});
+
+async function deleteSubcollection(name) {
+  const snap = await getDocs(collection(db, "groups", activeGroupId, name));
+
+  const deletions = [];
+
+  snap.forEach(item => {
+    deletions.push(
+      deleteDoc(doc(db, "groups", activeGroupId, name, item.id))
+    );
+  });
+
+  await Promise.all(deletions);
+}
 
 export function listenGroups() {
   if (!currentUser) return;
@@ -161,7 +196,7 @@ export function listenGroups() {
       `;
 
       item.addEventListener("click", () => {
-        openGroup(documentSnapshot.id, group.name);
+        openGroup(documentSnapshot.id, group);
       });
 
       groupsList.appendChild(item);
@@ -169,11 +204,18 @@ export function listenGroups() {
   });
 }
 
-export async function openGroup(groupId, groupName) {
+export async function openGroup(groupId, group) {
   activeGroupId = groupId;
-  activeGroupName = groupName;
+  activeGroupName = group.name;
+  activeGroupData = group;
 
-  groupTitle.textContent = groupName;
+  groupTitle.textContent = group.name;
+
+  if (group.adminId === currentUser.uid) {
+    adminPanel.classList.remove("hidden");
+  } else {
+    adminPanel.classList.add("hidden");
+  }
 
   showView("groupView");
 
@@ -194,7 +236,6 @@ export function listenMembers() {
 
   onSnapshot(membersRef, (snapshot) => {
     activeMembers = [];
-
     membersList.innerHTML = "";
 
     snapshot.forEach((docSnap) => {
