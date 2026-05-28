@@ -451,3 +451,23 @@ h3 {
     display: none;
   }
 }
+.admin-strip {
+  margin: 0 20px 18px;
+}
+
+.danger-btn {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #9f2f2f;
+  border-radius: 6px;
+  background: #fff;
+  color: #9f2f2f;
+  font-weight: 500;
+}
+
+@media (min-width: 900px) {
+  .admin-strip {
+    margin-left: 48px;
+    margin-right: 48px;
+  }
+}
