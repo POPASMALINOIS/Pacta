@@ -14,27 +14,44 @@ import {
 
 export let currentUser = null;
 
+const loginTab = document.getElementById("loginTab");
+const registerTab = document.getElementById("registerTab");
+const nameField = document.getElementById("nameField");
 const authForm = document.getElementById("authForm");
 const logoutBtn = document.getElementById("logoutBtn");
+const bottomNav = document.getElementById("bottomNav");
 
-authForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+let authMode = "login";
 
-  const mode = window.pactaAuthMode || "login";
+loginTab.addEventListener("click", () => {
+  authMode = "login";
+
+  loginTab.classList.add("active");
+  registerTab.classList.remove("active");
+  nameField.classList.add("hidden");
+});
+
+registerTab.addEventListener("click", () => {
+  authMode = "register";
+
+  registerTab.classList.add("active");
+  loginTab.classList.remove("active");
+  nameField.classList.remove("hidden");
+});
+
+authForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
   const name = document.getElementById("name").value.trim();
 
   try {
-    if (mode === "register") {
-      const result = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+    if (authMode === "register") {
+      const result = await createUserWithEmailAndPassword(auth, email, password);
 
       await setDoc(doc(db, "users", result.user.uid), {
+        uid: result.user.uid,
         name: name || email,
         email,
         createdAt: Date.now()
@@ -53,24 +70,27 @@ logoutBtn.addEventListener("click", async () => {
   await signOut(auth);
 });
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   currentUser = user;
 
   const authView = document.getElementById("authView");
   const homeView = document.getElementById("homeView");
 
+  document.querySelectorAll(".view").forEach(view => {
+    view.classList.remove("active");
+  });
+
   if (user) {
-    authView.classList.remove("active");
     homeView.classList.add("active");
     logoutBtn.classList.remove("hidden");
+    bottomNav.classList.remove("hidden");
 
-    import("./groups.js").then((module) => {
-      module.listenGroups();
-    });
+    const groups = await import("./groups.js");
+    groups.listenGroups();
 
   } else {
     authView.classList.add("active");
-    homeView.classList.remove("active");
     logoutBtn.classList.add("hidden");
+    bottomNav.classList.add("hidden");
   }
 });
