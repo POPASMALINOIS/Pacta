@@ -7,9 +7,31 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const groupBalance = document.getElementById("groupBalance");
+const balancesFullView = document.getElementById("balancesFullView");
 
 export async function calculateBalance() {
-  if (!activeGroupId) return;
+  const html = await buildBalanceHtml();
+
+  if (groupBalance) {
+    groupBalance.innerHTML = html;
+  }
+}
+
+export async function renderBalancesView() {
+  const html = await buildBalanceHtml();
+
+  if (balancesFullView) {
+    balancesFullView.innerHTML = html;
+  }
+}
+
+async function buildBalanceHtml() {
+  if (!activeGroupId) {
+    return `
+      <div class="item-title">No hay grupo abierto</div>
+      <div class="item-sub">Abre un grupo para ver sus saldos.</div>
+    `;
+  }
 
   const snapshot = await getDocs(
     collection(db, "groups", activeGroupId, "expenses")
@@ -51,11 +73,9 @@ export async function calculateBalance() {
   });
 
   let html = `
-    <div class="summary-grid">
-      <div>
-        <p class="eyebrow">Total gastado</p>
-        <div class="summary-number">${total.toFixed(2)} €</div>
-      </div>
+    <div>
+      <p class="eyebrow">Total gastado</p>
+      <div class="summary-number">${total.toFixed(2)} €</div>
     </div>
   `;
 
@@ -99,9 +119,7 @@ export async function calculateBalance() {
       <div class="balance-row">
         <div>
           <strong>Pagos recomendados</strong>
-          <div class="item-sub">
-            Para saldar el grupo con el menor número de movimientos.
-          </div>
+          <div class="item-sub">Para saldar el grupo con el menor número de movimientos.</div>
         </div>
       </div>
     `;
@@ -112,16 +130,14 @@ export async function calculateBalance() {
 
       html += `
         <div class="balance-row">
-          <div>
-            ${from?.name || from?.email} paga a ${to?.name || to?.email}
-          </div>
+          <div>${from?.name || from?.email} paga a ${to?.name || to?.email}</div>
           <div class="amount">${move.amount.toFixed(2)} €</div>
         </div>
       `;
     });
   }
 
-  groupBalance.innerHTML = html;
+  return html;
 }
 
 function calculateSettlements(balances) {
