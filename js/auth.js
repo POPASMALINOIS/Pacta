@@ -1,7 +1,4 @@
-import {
-  auth,
-  db
-} from "./firebase-config.js";
+import { auth, db } from "./firebase-config.js";
 
 import {
   createUserWithEmailAndPassword,
@@ -17,119 +14,63 @@ import {
 
 export let currentUser = null;
 
-let isLogin = true;
-
 const authForm = document.getElementById("authForm");
-
-const loginTab = document.getElementById("loginTab");
-
-const registerTab = document.getElementById("registerTab");
-
-const nameField = document.getElementById("nameField");
-
 const logoutBtn = document.getElementById("logoutBtn");
 
-loginTab.onclick = () => {
-
-  isLogin = true;
-
-  loginTab.classList.add("active");
-
-  registerTab.classList.remove("active");
-
-  nameField.classList.add("hidden");
-};
-
-registerTab.onclick = () => {
-
-  isLogin = false;
-
-  registerTab.classList.add("active");
-
-  loginTab.classList.remove("active");
-
-  nameField.classList.remove("hidden");
-};
-
 authForm.addEventListener("submit", async (e) => {
-
   e.preventDefault();
 
-  const email =
-    document.getElementById("email").value;
+  const mode = window.pactaAuthMode || "login";
 
-  const password =
-    document.getElementById("password").value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const name = document.getElementById("name").value.trim();
 
   try {
-
-    if (isLogin) {
-
-      await signInWithEmailAndPassword(
+    if (mode === "register") {
+      const result = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
 
+      await setDoc(doc(db, "users", result.user.uid), {
+        name: name || email,
+        email,
+        createdAt: Date.now()
+      });
+
     } else {
-
-      const name =
-        document.getElementById("name").value;
-
-      const result =
-        await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-      await setDoc(
-        doc(db, "users", result.user.uid),
-        {
-          name,
-          email,
-          createdAt: Date.now()
-        }
-      );
+      await signInWithEmailAndPassword(auth, email, password);
     }
 
-  } catch (err) {
-
-    alert(err.message);
+  } catch (error) {
+    alert(error.message);
   }
 });
 
-logoutBtn.onclick = async () => {
-
+logoutBtn.addEventListener("click", async () => {
   await signOut(auth);
-};
+});
 
 onAuthStateChanged(auth, (user) => {
-
   currentUser = user;
 
+  const authView = document.getElementById("authView");
+  const homeView = document.getElementById("homeView");
+
   if (user) {
-
-    document
-      .getElementById("authView")
-      .classList.remove("active");
-
-    document
-      .getElementById("homeView")
-      .classList.add("active");
-
+    authView.classList.remove("active");
+    homeView.classList.add("active");
     logoutBtn.classList.remove("hidden");
 
+    import("./groups.js").then((module) => {
+      module.listenGroups();
+    });
+
   } else {
-
-    document
-      .getElementById("authView")
-      .classList.add("active");
-
-    document
-      .getElementById("homeView")
-      .classList.remove("active");
-
+    authView.classList.add("active");
+    homeView.classList.remove("active");
     logoutBtn.classList.add("hidden");
   }
 });
