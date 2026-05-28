@@ -1,25 +1,13 @@
-const loginTab = document.getElementById("loginTab");
-const registerTab = document.getElementById("registerTab");
-const nameField = document.getElementById("nameField");
+import "./auth.js";
 
-window.pactaAuthMode = "login";
+document.addEventListener("click", (event) => {
+  const goHome = event.target.closest("[data-go-home]");
 
-loginTab.addEventListener("click", () => {
-  window.pactaAuthMode = "login";
+  if (goHome) {
+    document.querySelectorAll(".view").forEach(view => {
+      view.classList.remove("active");
+    });
 
-  loginTab.classList.add("active");
-  registerTab.classList.remove("active");
-  nameField.classList.add("hidden");
-});
-
-registerTab.addEventListener("click", () => {
-  window.pactaAuthMode = "register";
-
-  registerTab.classList.add("active");
-  loginTab.classList.remove("active");
-  nameField.classList.remove("hidden");
-});
-
-import("./auth.js").catch((error) => {
-  console.error("Error cargando auth.js:", error);
+    document.getElementById("homeView").classList.add("active");
+  }
 });
