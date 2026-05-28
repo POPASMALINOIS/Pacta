@@ -139,12 +139,25 @@ button {
   border-color: var(--accent);
 }
 .primary-btn {
-  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 52px;
+
   padding: 0 22px;
+
   background: var(--accent);
   color: white;
+
   border-radius: 6px;
+
   font-weight: 500;
+  font-size: 15px;
+
+  border: none;
+  cursor: pointer;
 }
 .ghost-btn {
   height: 42px;
