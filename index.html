@@ -130,8 +130,12 @@
       </div>
 
       <div id="groupBalance" class="summary-strip"></div>
-
-      <section class="panel">
+      <div id="adminPanel" class="admin-strip hidden">
+        <button type="button" id="deleteGroupBtn" class="danger-btn">
+          Eliminar grupo
+        </button>
+      </div>
+            <section class="panel">
         <div class="panel-head">
           <div>
             <p class="eyebrow">Participantes</p>
@@ -200,11 +204,21 @@
       </form>
 
     </section>
-
+    <section id="balancesView" class="view">
+    <div class="screen-head">
+      <div>
+        <p class="eyebrow">Saldos</p>
+        <h2>Resumen económico</h2>
+      </div>
+    </div>
+  
+    <div id="balancesFullView" class="summary-strip"></div>
+  </section>
+  
   </main>
 
   <nav id="bottomNav" class="bottom-nav hidden">
-    <button type="button" data-nav="home" class="active">Inicio</button>
+    <button type="button" data-nav="home" class="active">Grupos</button>
     <button type="button" data-nav="group">Grupo</button>
     <button type="button" data-nav="balances">Saldos</button>
   </nav>
