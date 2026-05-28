@@ -1,129 +1,259 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
 
   <title>Pacta</title>
 
-  <link rel="manifest" href="./manifest.json" />
-  <link rel="stylesheet" href="./css/styles.css" />
+  <link
+    rel="manifest"
+    href="./manifest.json"
+  />
+
+  <link
+    rel="stylesheet"
+    href="./css/styles.css"
+  />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
+
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
     rel="stylesheet"
   />
+
 </head>
 
 <body>
 
   <div id="app">
 
+    <!-- TOPBAR -->
+
     <header class="topbar">
+
       <div class="brand">
+
         <span class="brand-dot"></span>
-        <span class="brand-name">Pacta</span>
+
+        <span class="brand-name">
+          Pacta
+        </span>
+
       </div>
 
-      <button 
-        type="submit" 
-        id="continueBtn"
-        style="display:flex;width:100%;height:52px;background:#18352d;color:white;align-items:center;justify-content:center;border-radius:6px;border:0;"
+      <button
+        type="button"
+        id="logoutBtn"
+        class="ghost-btn hidden"
       >
-        Continuar
+        Salir
       </button>
+
     </header>
 
-    <section id="authView" class="view active">
+    <!-- AUTH -->
+
+    <section
+      id="authView"
+      class="view active"
+    >
+
       <div class="auth-shell">
 
         <div class="auth-copy">
-          <h1>Gastos compartidos, sin conversaciones incómodas.</h1>
-          <p>Pacta organiza gastos grupales en tiempo real.</p>
+
+          <h1>
+            Gastos compartidos,
+            sin conversaciones incómodas.
+          </h1>
+
+          <p>
+            Pacta organiza gastos grupales en tiempo real.
+          </p>
+
         </div>
 
         <div class="auth-panel">
 
           <div class="auth-tabs">
-            <button type="button" id="loginTab" class="tab active">
+
+            <button
+              type="button"
+              id="loginTab"
+              class="tab active"
+            >
               Entrar
             </button>
 
-            <button type="button" id="registerTab" class="tab">
+            <button
+              type="button"
+              id="registerTab"
+              class="tab"
+            >
               Registro
             </button>
+
           </div>
 
           <form id="authForm">
 
-            <div id="nameField" class="field hidden">
-              <label>Nombre</label>
-              <input type="text" id="name" autocomplete="name" />
+            <div
+              id="nameField"
+              class="field hidden"
+            >
+
+              <label>
+                Nombre
+              </label>
+
+              <input
+                type="text"
+                id="name"
+                autocomplete="name"
+              />
+
             </div>
-          
+
             <div class="field">
-              <label>Email</label>
-              <input type="email" id="email" required autocomplete="email" />
+
+              <label>
+                Email
+              </label>
+
+              <input
+                type="email"
+                id="email"
+                required
+                autocomplete="email"
+              />
+
             </div>
-          
+
             <div class="field">
-              <label>Contraseña</label>
-              <input type="password" id="password" required autocomplete="current-password" />
+
+              <label>
+                Contraseña
+              </label>
+
+              <input
+                type="password"
+                id="password"
+                required
+                autocomplete="current-password"
+              />
+
             </div>
-          
-            <button type="submit" class="primary-btn">
+
+            <button
+              type="submit"
+              class="primary-btn"
+              id="continueBtn"
+            >
               Continuar
             </button>
-          
+
           </form>
 
         </div>
+
       </div>
+
     </section>
 
-    <section id="homeView" class="view">
+    <!-- HOME -->
+
+    <section
+      id="homeView"
+      class="view"
+    >
 
       <div class="page-head">
+
         <div>
-          <p class="eyebrow">Tus grupos</p>
-          <h2 id="welcomeText">Hola</h2>
+
+          <p class="eyebrow">
+            Tus grupos
+          </p>
+
+          <h2 id="welcomeText">
+            Hola
+          </h2>
+
         </div>
 
-        <button type="button" id="newGroupBtn" class="primary-btn">
+        <button
+          type="button"
+          id="newGroupBtn"
+          class="primary-btn"
+        >
           Nuevo grupo
         </button>
+
       </div>
 
-      <div id="groupsList" class="groups-list"></div>
+      <div
+        id="groupsList"
+        class="groups-list"
+      ></div>
 
     </section>
 
-    <section id="createGroupView" class="view">
+    <!-- CREATE GROUP -->
+
+    <section
+      id="createGroupView"
+      class="view"
+    >
 
       <div class="form-page">
 
         <div class="page-head">
+
           <div>
-            <p class="eyebrow">Nuevo grupo</p>
-            <h2>Crear grupo</h2>
+
+            <p class="eyebrow">
+              Nuevo grupo
+            </p>
+
+            <h2>
+              Crear grupo
+            </h2>
+
           </div>
+
         </div>
 
         <form id="groupForm">
 
           <div class="field">
-            <label>Nombre del grupo</label>
+
+            <label>
+              Nombre del grupo
+            </label>
+
             <input
               type="text"
               id="groupName"
               placeholder="Viaje a Asturias"
               required
             />
+
           </div>
 
-          <button type="submit" class="primary-btn">
+          <button
+            type="submit"
+            class="primary-btn"
+          >
             Crear grupo
           </button>
 
@@ -133,51 +263,107 @@
 
     </section>
 
-    <section id="groupView" class="view">
+    <!-- GROUP DETAIL -->
+
+    <section
+      id="groupView"
+      class="view"
+    >
 
       <div class="group-header">
 
         <div>
-          <p class="eyebrow">Grupo</p>
+
+          <p class="eyebrow">
+            Grupo
+          </p>
+
           <h2 id="groupTitle"></h2>
+
         </div>
 
-        <button type="button" id="addExpenseBtn" class="primary-btn">
+        <button
+          type="button"
+          id="addExpenseBtn"
+          class="primary-btn"
+        >
           Nuevo gasto
         </button>
 
       </div>
 
-      <div id="groupBalance" class="balance-box"></div>
+      <div
+        id="groupBalance"
+        class="balance-box"
+      ></div>
 
-      <div id="expensesList" class="expenses-list"></div>
+      <div
+        id="expensesList"
+        class="expenses-list"
+      ></div>
 
     </section>
 
-    <section id="expenseView" class="view">
+    <!-- EXPENSE -->
+
+    <section
+      id="expenseView"
+      class="view"
+    >
 
       <div class="form-page">
 
         <div class="page-head">
+
           <div>
-            <p class="eyebrow">Nuevo gasto</p>
-            <h2>Añadir gasto</h2>
+
+            <p class="eyebrow">
+              Nuevo gasto
+            </p>
+
+            <h2>
+              Añadir gasto
+            </h2>
+
           </div>
+
         </div>
 
         <form id="expenseForm">
 
           <div class="field">
-            <label>Descripción</label>
-            <input type="text" id="expenseDescription" required />
+
+            <label>
+              Descripción
+            </label>
+
+            <input
+              type="text"
+              id="expenseDescription"
+              required
+            />
+
           </div>
 
           <div class="field">
-            <label>Importe</label>
-            <input type="number" step="0.01" id="expenseAmount" required />
+
+            <label>
+              Importe
+            </label>
+
+            <input
+              type="number"
+              step="0.01"
+              id="expenseAmount"
+              required
+            />
+
           </div>
 
-          <button type="submit" class="primary-btn">
+          <button
+            type="submit"
+            class="primary-btn"
+          >
             Guardar gasto
           </button>
 
@@ -189,7 +375,11 @@
 
   </div>
 
-  <script type="module" src="./js/app.js"></script>
+  <script
+    type="module"
+    src="./js/app.js"
+  ></script>
 
 </body>
+
 </html>
